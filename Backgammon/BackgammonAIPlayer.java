@@ -8,36 +8,66 @@ import aima.core.search.adversarial.IterativeDeepeningAlphaBetaSearch;
 import aima.core.search.framework.Metrics;
 
 /**
- * Implements an iterative deepening Minimax search with alpha-beta pruning and chance nodes.
+ * Implements an Iterative Deepening Adversarial Search with Alpha-Beta Pruning and chance nodes.
  *
  * @author Andrew Socha
  */
-public class BackgammonAIPlayer extends
-        IterativeDeepeningAlphaBetaSearch<BackgammonState, Integer, String> {
-    
+public class BackgammonAIPlayer extends IterativeDeepeningAlphaBetaSearch<BackgammonState, Integer, String> {
     Metrics metrics;
 
+    /**
+     * Creates the AI player for a Backgammon game
+     * 
+     * @param game the Backgammon game
+     * @param time the time the AI takes to determine its moves (in milliseconds)
+     */
     public BackgammonAIPlayer(Game<BackgammonState, Integer, String> game, int time) {
         super(game, 0.0, 1.0, time); //game, utilMin, utilMax, time
     }
 
+    /**
+     * Checks if one utility is significantly better than another.
+     * Used by the AI to end its search early if it finds one move that is
+     * way better than all others.
+     * 
+     * @param newUtility the newly found utility (currently the best one the AI has found) (0-1)
+     * @param utility    the utility that was previously the best on the AI had found (0-1)
+     * @return           true if the new utility is significantly better than the old one,
+     *                   false otherwise
+     */
     @Override
     protected boolean isSignificantlyBetter(double newUtility, double utility) {
         return newUtility - utility > 0.03;
     }
 
+    /**
+     * Not used, but forced to Override it
+     */
     @Override
     protected boolean hasSafeWinner(double resultUtility) {
         return (resultUtility == 1);
     }
 
+    /**
+     * Determines the utility of a state for a certain player
+     * 
+     * @param state     any game state
+     * @param player    the name of either player
+     * @return          the utility of the state for the given player
+     */
     @Override
     protected double eval(BackgammonState state, String player) {
         if (state.getUtility() != 1 && state.getUtility() != 0) maxDepthReached = true;
         return game.getUtility(state, player);
     }
     
-    //figures out what move the AI player will make using Iterative Deepening, Alpha-Beta Search
+    /**
+     * Figures out what move the AI player will make using Iterative Deepening
+     * Adversarial Search with Alpha-Beta Pruning
+     * 
+     * @param state the current game state
+     * @return      the move that the AI choose (0-25 or 50-75, or -1 for no valid moves)
+     */
     @Override
     public Integer makeDecision(BackgammonState state) {
         maxTime += System.currentTimeMillis();
@@ -96,7 +126,7 @@ public class BackgammonAIPlayer extends
                 value = Math.round(value);
                 value = value / 1000000000;
                 
-                logText.append(action + "->" + value + " ");
+                logText.append(action).append("->").append(value).append(" ");
                 if (value >= newResultValue) {
                     if (value > newResultValue) {
                         secondBestValue = newResultValue;
@@ -135,8 +165,18 @@ public class BackgammonAIPlayer extends
         if (results.contains(result)) return result;
         return result + 50;
     }
-    
-    //returns a utility value
+
+    /**
+     * Determines the maximum estimated utility that can be obtained from all of
+     * the possible moves avaliable in a game state
+     * 
+     * @param state     any game state
+     * @param player    the current player (of the game, not necessarily the state)
+     * @param alpha     alpha for alpha-beta pruning
+     * @param beta      beta for alpha-beta pruning
+     * @param depth     the depth in the search tree
+     * @return          the calculated utility
+     */
     @Override
     public double maxValue(BackgammonState state, String player, double alpha, double beta, int depth) {
         expandedNodes++;
@@ -173,7 +213,17 @@ public class BackgammonAIPlayer extends
         }
     }
     
-    //returns a utility
+    /**
+     * Determines the minimum estimated utility that can be obtained from all of
+     * the possible moves avaliable in a game state
+     * 
+     * @param state     any game state
+     * @param player    the current player (of the game, not necessarily the state)
+     * @param alpha     alpha for alpha-beta pruning
+     * @param beta      beta for alpha-beta pruning
+     * @param depth     the depth in the search tree
+     * @return          the calculated utility
+     */
     @Override
     public double minValue(BackgammonState state, String player, double alpha, double beta, int depth) {
         expandedNodes++;
@@ -210,7 +260,11 @@ public class BackgammonAIPlayer extends
         }
     }
     
-    /** Returns some statistical data from the last search. */
+    /**
+     * Returns some statistical data from the last search.
+     * 
+     * @return the search data
+     */
     @Override
     public Metrics getMetrics() {
         metrics.set(String.valueOf(-1), "Expanded Nodes: " + expandedNodes);

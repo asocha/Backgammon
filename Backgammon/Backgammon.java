@@ -1,10 +1,10 @@
 package Backgammon;
 
-/*
+/**
  * Creates a Backgammon game involving human and/or AI players.
  * @author Andrew Socha
  *
- * Created using the aima-java libraries at https://code.google.com/p/aima-java/
+ * Created using the AIMA-Java libraries at https://code.google.com/p/aima-java/
  * Also used the Connect Four example from http://aima-java.googlecode.com/svn/trunk/aima-all/release/aima3ejavademos.html
  * as a starting place, converting it into this Backgammon game.
  */
@@ -26,7 +26,11 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
 
-//this class implements the GUI to play the game
+/**
+ * Implements the GUI to play the Backgammon game
+ * 
+ * @author Andrew
+ */
 public class Backgammon {
     
     /** Application starter. */
@@ -36,6 +40,11 @@ public class Backgammon {
         frame.setVisible(true);
     }
 
+    /**
+     * Creates the game window
+     * 
+     * @return the game window's JFrame
+     */
     public JFrame constructApplicationFrame() {
         JFrame frame = new JFrame();
         JPanel panel = new BackgammonPanel();
@@ -44,7 +53,7 @@ public class Backgammon {
         return frame;
     }
 
-    /** Simple panel to control the game. */
+    /** Panel in which the game is played. */
     private static class BackgammonPanel extends JPanel implements ActionListener {
         JComboBox timeCombo;
         JComboBox metrics;
@@ -156,7 +165,7 @@ public class Backgammon {
             updateStatus();
         }
 
-        /** Uses adversarial search for selecting the next action. */
+        /** Uses adversarial search to select the next action. */
         private void proposeMove() {
             int time = (int)(1000.0 * Math.pow(5, timeCombo.getSelectedIndex() - 1)); //time allotted to determine move (in ms)
             AdversarialSearch<BackgammonState, Integer> search = new BackgammonAIPlayer(game, time);
@@ -189,7 +198,7 @@ public class Backgammon {
             statusBar.setText(statusText);
         }
 
-        /** Represents a space within the grid where discs can be placed. */
+        /** Represents a space on the board where discs can be placed. */
         private class GridElement extends JButton {
             int location;
 
